@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	<context:component-scan
+		base-package="org.springframework.samples.petclinic.web" />
+
+	<!-- ※ dispatcher-servlet.xml 의 기본 샘플 코드 -->
+	<!-- 	이 코드는 기본 설정 내용을 복사하기 위해서 스프링 doc 를 참고하여 작성한다. -->
+	<!-- 		→ file:///C:/spring-framework/docs/spring-framework-reference/pdf/spring-framework-reference.pdf -->
+	<!-- 		→ 『spring-framework-reference.pdf』 파일 실행 -->
+	<!-- 		→ 문서 본문 내용의 425페이지(직접이동 450/805)로 이동 -->
+	<!-- 		→ 페이지 하단의 XML 파일 샘플코드 복사&붙여넣기 -->
+	
+	<!-- 『BeanNameUrlHandlerMapping』 -->
+	<bean id="beanNameUrlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true"></property>
+		<property name="order" value="1"></property>
+	</bean>
+	<!-- 1번을 가져다 써라  -->
+	
+	
+	<!-- 『InternalResourceViewResolver』 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	<!-- 앞에는  /WEB-INF/views/ 뒤에는 .jsp 를 붙인다.-->
+
+	<!-- DataSource 등록 → SimpleDriverDataSource -->
+	<bean id="localDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
+		<property name="username" value="scott"></property>
+		<property name="password" value="tiger"></property>
+	</bean>
+	
+	<bean id="remoteDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
+		<property name="username" value="scott"></property>
+		<property name="password" value="tiger"></property>
+	</bean>
+	
+	<!-- DAO 등록 -->
+	
+	<bean id="employeeDAO" class="com.test.mvc.EmployeeDAO">
+		<property name="dataSource" ref="localDataSource"></property>	
+	</bean>
+
+	<bean id="regionDAO" class="com.test.mvc.RegionDAO">
+		<property name="dataSource" ref="localDataSource"></property>	
+	</bean>
+
+	<bean id="positionDAO" class="com.test.mvc.PositionDAO">
+		<property name="dataSource" ref="localDataSource"></property>	
+	</bean>
+	
+	<bean id="departmentDAO" class="com.test.mvc.DepartmentDAO">
+		<property name="dataSource" ref="localDataSource"></property>	
+	</bean>
+	<!-- Controller 등록 -->
+	
+	<!-- AJAX 관련 Controller 등록 -->
+	<bean name="/ajax.action" class="com.test.mvc.AjaxController">
+		<property name="dao" ref="employeeDAO"></property>
+	</bean>
+	
+		<!-- AJAX 관련 Controller 등록 -->
+	<bean name="/positionajax.action" class="com.test.mvc.PositionAjaxController">
+		<property name="dao" ref="positionDAO"></property>
+	</bean>
+	
+	<!-- 직원 리스트 -->
+	<bean name="/employeelist.action" class="com.test.mvc.EmployeeListController">
+		<property name="dao" ref="employeeDAO"></property>
+	
+	</bean>
+	
+	<!-- 직원 데이터 입력폼  -->
+	<bean name="/employeeinsertform.action" class="com.test.mvc.EmployeeInsertFormController">
+		<property name="dao" ref="employeeDAO"></property>
+		<!-- dao라는 속성에 employeeDAO 넣어라   -->	
+	</bean>
+	
+	<!-- 직원 데이터 입력 액션 Controller 등록  -->
+	<bean name="/employeeinsert.action" class="com.test.mvc.EmployeeInsertController">
+		<property name="dao" ref="employeeDAO"></property>
+	</bean>
+
+	<!-- ★★★★★ -->
+	<!-- 직원 데이터 입력폼 Controller와 비교 ~!! -->
+	<!-- 직원 데이터 수정폼 Controller 등록 -->
+	<bean name="/employeeupdateform.action" class="com.test.mvc.EmployeeUpdateFormController">
+		<property name="employeeDAO" ref="employeeDAO"></property>
+		<property name="regionDAO" ref="regionDAO"></property>
+		<property name="positionDAO" ref="positionDAO"></property>
+		<property name="departmentDAO" ref="departmentDAO"></property>
+	</bean>
+
+	<!-- 직원 데이터 수정 액션 Controller 등록 -->
+	<bean name="/employeeupdate.action" class="com.test.mvc.EmployeeUpdateController">
+		<property name="dao" ref="employeeDAO"></property>	
+	</bean>
+	
+	
+	<!-- 직원 데이터 삭제 액션 Controller 등록 -->
+	<bean name="/employeedelete.action" class="com.test.mvc.EmployeeDeleteController">
+		<property name="dao" ref="employeeDAO"></property>	
+	</bean>
+	
+	<!-- Login 폼 페이지 요청 Controller 등록  -->
+	<bean name="/loginform.action" class="com.test.mvc.LoginFormController"></bean>
+	
+	<!-- Login 액션 Controller 등록 -->
+	<bean name="/login.action" class="com.test.mvc.LoginController">
+		<property name="dao" ref="employeeDAO"></property>
+	</bean>
+	
+	<!-- Logout 액션 Controller 등록 -->
+	<bean name="/logout.action" class="com.test.mvc.LogoutController"></bean>
+	
+	<!-- 직원 리스트 Controller 등록 (일반 직원) -->
+	<bean name="/emplist.action" class="com.test.mvc.EmpListController">
+		<property name="dao" ref="employeeDAO"></property>
+	
+	</bean>
+	
+	<!-- =================================================================================== -->
+	<!-- 지역 리스트 Controller 등록 (관리자) -->
+	
+	<bean name="/regionlist.action" class="com.test.mvc.RegionListController">
+		<property name="dao" ref="regionDAO"></property>
+	</bean>
+	
+	<!-- 지역 추가폼 Controller 등록 (관리자)  -->
+	<bean name="/regioninsertform.action" class="com.test.mvc.RegionInsertFormController"></bean>
+	
+	<!-- 지역 추가 Controller 등록 (관리자)  -->
+	<bean name="/regioninsert.action" class="com.test.mvc.RegionInsertController">
+		<property name="dao" ref="regionDAO"></property>
+	</bean>
+	
+	<!-- 지역 수정폼 Controller 등록 (관리자)  -->
+	<bean name="/regionupdateform.action" class="com.test.mvc.RegionUpdateFormController">
+		<property name="dao" ref="regionDAO"></property>
+	</bean>
+	
+	<!-- 지역 수정 Controller 등록 (관리자)  -->
+	<bean name="/regionupdate.action" class="com.test.mvc.RegionUpdateController">
+		<property name="dao" ref="regionDAO"></property>
+	</bean>
+	
+	<!-- 부서 리스트 Controller 등록 (관리자) -->
+	<bean name="/departmentlist.action" class="com.test.mvc.DepartmentListController">
+		<property name="dao" ref="departmentDAO"></property>
+	</bean>
+	
+	<!-- 직위 리스트 Controller 등록 (관리자) -->
+	<bean name="/positionlist.action" class="com.test.mvc.PositionListController">
+		<property name="dao" ref="positionDAO"></property>
+	</bean>
+
+<!-- =======================================================================================================  -->
+	
+	<!-- 부서 추가폼 Controller 등록 (관리자)  -->
+	<bean name="/departmentinsertform.action" class="com.test.mvc.DepartmentInsertFormController">
+	</bean>
+	
+	<!-- 부서 추가 Controller 등록 (관리자)  -->
+	<bean name="/departmentinsert.action" class="com.test.mvc.DepartmentInsertController">
+		<property name="dao" ref="departmentDAO"></property>
+	</bean>
+	
+	<!-- 직위 추가폼 Controller 등록 (관리자)  -->
+	<bean name="/positioninsertform.action" class="com.test.mvc.PositionInsertFormController"></bean>
+
+	<!-- 부서 추가 Controller 등록 (관리자)  -->
+	<bean name="/positioninsert.action" class="com.test.mvc.PositionInsertController">
+		<property name="dao" ref="positionDAO"></property>
+	</bean>
+
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
